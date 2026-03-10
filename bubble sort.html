@@ -1,0 +1,623 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>氣泡排序法 (Bubble Sort)</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #1a1a1a;
+            min-height: 100vh;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .container {
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.8);
+            padding: 40px;
+            max-width: 1000px;
+            width: 100%;
+        }
+
+        h1 {
+            text-align: center;
+            color: #333;
+            margin-bottom: 10px;
+            font-size: 2.5em;
+        }
+
+        .subtitle {
+            text-align: center;
+            color: #666;
+            margin-bottom: 30px;
+            font-size: 1.1em;
+        }
+
+        .content {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+            margin-bottom: 30px;
+        }
+
+        .intro-section, .visualization-section {
+            padding: 20px;
+            background: #f8f9fa;
+            border-radius: 10px;
+        }
+
+        .intro-section h2 {
+            color: #667eea;
+            margin-bottom: 15px;
+            font-size: 1.3em;
+        }
+
+        .intro-section p {
+            color: #555;
+            line-height: 1.8;
+            margin-bottom: 12px;
+            font-size: 0.95em;
+        }
+
+        .intro-section ul {
+            margin-left: 20px;
+            color: #555;
+            line-height: 1.8;
+        }
+
+        .intro-section li {
+            margin-bottom: 8px;
+        }
+
+        .visualization-section h2 {
+            color: #667eea;
+            margin-bottom: 20px;
+            font-size: 1.3em;
+        }
+
+        .controls {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+
+        button {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 0.95em;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+
+        #startBtn {
+            background: #667eea;
+            color: white;
+        }
+
+        #startBtn:hover:not(:disabled) {
+            background: #5568d3;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        }
+
+        #startBtn:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+        }
+
+        #resetBtn {
+            background: #48bb78;
+            color: white;
+        }
+
+        #resetBtn:hover {
+            background: #38a169;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(72, 187, 120, 0.4);
+        }
+
+        #randomBtn {
+            background: #ed8936;
+            color: white;
+        }
+
+        #randomBtn:hover {
+            background: #dd6b20;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(237, 137, 54, 0.4);
+        }
+
+        .speed-control {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .speed-control label {
+            color: #555;
+            font-weight: 600;
+        }
+
+        .speed-control input[type="range"] {
+            width: 150px;
+        }
+
+        .input-section {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 15px;
+            flex-wrap: wrap;
+            align-items: center;
+        }
+
+        .input-section label {
+            color: #555;
+            font-weight: 600;
+            font-size: 0.95em;
+        }
+
+        .input-section input[type="text"] {
+            flex: 1;
+            min-width: 200px;
+            padding: 8px 12px;
+            border: 2px solid #ddd;
+            border-radius: 5px;
+            font-size: 0.95em;
+            transition: border-color 0.3s ease;
+        }
+
+        .input-section input[type="text"]:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        #inputBtn {
+            background: #9f7aea;
+            color: white;
+        }
+
+        #inputBtn:hover {
+            background: #805ad5;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(159, 122, 234, 0.4);
+        }
+
+        .array-container {
+            display: flex;
+            align-items: flex-end;
+            justify-content: center;
+            gap: 4px;
+            height: 250px;
+            background: white;
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 15px;
+        }
+
+        .bar {
+            width: 25px;
+            background: #667eea;
+            border-radius: 4px 4px 0 0;
+            transition: all 0.05s ease;
+            position: relative;
+            display: flex;
+            align-items: flex-end;
+            justify-content: center;
+            color: white;
+            font-size: 10px;
+            font-weight: bold;
+            padding-bottom: 3px;
+            min-height: 20px;
+        }
+
+        .bar.comparing {
+            background: #f56565;
+        }
+
+        .bar.sorted {
+            background: #48bb78;
+        }
+
+        .bar.swapping {
+            background: #ed8936;
+        }
+
+        .info-box {
+            background: white;
+            padding: 15px;
+            border-radius: 8px;
+            border-left: 4px solid #667eea;
+            margin-top: 15px;
+        }
+
+        .info-box p {
+            color: #555;
+            margin: 5px 0;
+            font-size: 0.9em;
+        }
+
+        .step-info {
+            color: #667eea;
+            font-weight: 600;
+        }
+
+        .complexity-section {
+            margin-top: 30px;
+            padding: 20px;
+            background: #f8f9fa;
+            border-radius: 10px;
+        }
+
+        .complexity-section h2 {
+            color: #667eea;
+            margin-bottom: 15px;
+        }
+
+        .complexity-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 15px;
+        }
+
+        .complexity-table th,
+        .complexity-table td {
+            padding: 10px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+            color: #555;
+        }
+
+        .complexity-table th {
+            background: #667eea;
+            color: white;
+            font-weight: 600;
+        }
+
+        .complexity-table tr:hover {
+            background: #f0f0f0;
+        }
+
+        .back-link {
+            display: inline-block;
+            margin-bottom: 20px;
+            padding: 10px 20px;
+            background: #667eea;
+            color: white;
+            text-decoration: none;
+            border-radius: 5px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+
+        .back-link:hover {
+            background: #5568d3;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        }
+
+        @media (max-width: 768px) {
+            .content {
+                grid-template-columns: 1fr;
+            }
+
+            h1 {
+                font-size: 1.8em;
+            }
+
+            .array-container {
+                height: 200px;
+            }
+
+            .bar {
+                width: 20px;
+            }
+
+            .controls {
+                flex-direction: column;
+            }
+
+            button {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <a href="index.html" class="back-link">← 返回首頁</a>
+        <h1>🔄 氣泡排序法</h1>
+        <p class="subtitle">Bubble Sort - 可視化演示與詳細解釋</p>
+
+        <div class="content">
+            <!-- 介紹部分 -->
+            <div class="intro-section">
+                <h2>什麼是氣泡排序法？</h2>
+                <p>氣泡排序法是一種簡單的排序演算法，透過重複地比較相鄰的元素，如果順序不對就交換它們，直到整個陣列排序完成。</p>
+                
+                <h2 style="margin-top: 20px;">演算法特點</h2>
+                <ul>
+                    <li><strong>簡單易懂：</strong>邏輯清晰，容易實現</li>
+                    <li><strong>穩定排序：</strong>相等元素的相對位置不改變</li>
+                    <li><strong>原地排序：</strong>不需要額外的記憶體空間</li>
+                    <li><strong>效率較低：</strong>適合小規模資料</li>
+                </ul>
+
+                <h2 style="margin-top: 20px;">排序原理</h2>
+                <p>逐次比較相鄰兩個元素，將較大（或較小）的元素向後（或向前）移動，如同氣泡上升一樣，故稱為「氣泡排序」。</p>
+            </div>
+
+            <!-- 可視化部分 -->
+            <div class="visualization-section">
+                <h2>互動演示</h2>
+                
+                <div class="input-section">
+                    <label for="numberInput">輸入數字：</label>
+                    <input type="text" id="numberInput" placeholder="例如：5, 2, 8, 1, 9（用逗號或空格分隔）">
+                    <button id="inputBtn" onclick="setCustomArray()">設定</button>
+                </div>
+                
+                <div class="controls">
+                    <button id="startBtn" onclick="startSort()">開始排序</button>
+                    <button id="resetBtn" onclick="resetArray()">重置</button>
+                    <button id="randomBtn" onclick="generateRandomArray()">隨機生成</button>
+                    <div class="speed-control">
+                        <label for="speedSlider">速度：</label>
+                        <input type="range" id="speedSlider" min="10" max="100" value="50">
+                    </div>
+                </div>
+
+                <div class="array-container" id="arrayContainer"></div>
+
+                <div class="info-box">
+                    <p><span class="step-info">比較次數：</span><span id="comparisonCount">0</span></p>
+                    <p><span class="step-info">交換次數：</span><span id="swapCount">0</span></p>
+                    <p><span class="step-info">當前步驟：</span><span id="stepInfo">就緒</span></p>
+                </div>
+            </div>
+        </div>
+
+        <!-- 複雜度分析 -->
+        <div class="complexity-section">
+            <h2>時間與空間複雜度</h2>
+            <table class="complexity-table">
+                <thead>
+                    <tr>
+                        <th>情景</th>
+                        <th>時間複雜度</th>
+                        <th>說明</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>最好情況</td>
+                        <td>O(n)</td>
+                        <td>陣列已排序，只需一次掃描</td>
+                    </tr>
+                    <tr>
+                        <td>平均情況</td>
+                        <td>O(n²)</td>
+                        <td>隨機排列的陣列</td>
+                    </tr>
+                    <tr>
+                        <td>最壞情況</td>
+                        <td>O(n²)</td>
+                        <td>陣列反向排序，需要最多比較</td>
+                    </tr>
+                    <tr>
+                        <td>空間複雜度</td>
+                        <td>O(1)</td>
+                        <td>原地排序，僅需常數額外空間</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <!-- 演算法步驟 -->
+        <div class="complexity-section">
+            <h2>詳細步驟</h2>
+            <ol style="color: #555; line-height: 2; margin-left: 20px;">
+                <li>比較陣列第一個和第二個元素</li>
+                <li>如果第一個大於第二個，則交換它們</li>
+                <li>比較第二個和第三個元素，重複上述過程</li>
+                <li>直到比較到陣列的最後一個元素</li>
+                <li>完成一輪掃描後，最大的元素會移動到陣列末尾</li>
+                <li>忽略已排序的部分，重複步驟 1-5</li>
+                <li>直到整個陣列排序完成</li>
+            </ol>
+        </div>
+    </div>
+
+    <script>
+        let array = [];
+        let isSorting = false;
+        let comparisonCount = 0;
+        let swapCount = 0;
+
+        // 設定自定義陣列
+        function setCustomArray() {
+            const input = document.getElementById('numberInput').value.trim();
+            
+            if (!input) {
+                alert('請輸入數字！');
+                return;
+            }
+
+            try {
+                // 支援逗號或空格分隔
+                const numbers = input.split(/[,\s]+/)
+                    .filter(n => n.trim() !== '')
+                    .map(n => parseInt(n.trim()));
+
+                // 驗證所有輸入都是有效的數字
+                if (numbers.some(n => isNaN(n))) {
+                    alert('請輸入有效的數字！');
+                    return;
+                }
+
+                if (numbers.length === 0) {
+                    alert('請輸入至少一個數字！');
+                    return;
+                }
+
+                array = numbers;
+                resetCounts();
+                document.getElementById('stepInfo').textContent = '就緒';
+                render();
+                alert(`已設定 ${numbers.length} 個數字，點擊「開始排序」開始！`);
+            } catch (error) {
+                alert('輸入格式錯誤，請檢查！');
+            }
+        }
+
+        // 初始化陣列
+        function generateRandomArray() {
+            array = [];
+            const arraySize = 20;
+            for (let i = 0; i < arraySize; i++) {
+                array.push(Math.floor(Math.random() * 100) + 1);
+            }
+            resetCounts();
+            document.getElementById('numberInput').value = '';
+            render();
+        }
+
+        // 重置統計
+        function resetCounts() {
+            comparisonCount = 0;
+            swapCount = 0;
+            updateCounts();
+        }
+
+        // 更新統計資訊
+        function updateCounts() {
+            document.getElementById('comparisonCount').textContent = comparisonCount;
+            document.getElementById('swapCount').textContent = swapCount;
+        }
+
+        // 獲取延遲時間
+        function getDelay() {
+            const speed = document.getElementById('speedSlider').value;
+            return 101 - speed;
+        }
+
+        // 渲染陣列
+        function render(comparingIndices = [], swappingIndices = [], sortedIndices = []) {
+            const container = document.getElementById('arrayContainer');
+            container.innerHTML = '';
+
+            const maxValue = Math.max(...array);
+
+            array.forEach((value, index) => {
+                const bar = document.createElement('div');
+                bar.className = 'bar';
+                bar.style.height = (value / maxValue) * 200 + 'px';
+                bar.textContent = value;
+
+                if (sortedIndices.includes(index)) {
+                    bar.classList.add('sorted');
+                } else if (swappingIndices.includes(index)) {
+                    bar.classList.add('swapping');
+                } else if (comparingIndices.includes(index)) {
+                    bar.classList.add('comparing');
+                }
+
+                container.appendChild(bar);
+            });
+        }
+
+        // 交換元素
+        async function swap(i, j) {
+            [array[i], array[j]] = [array[j], array[i]];
+            swapCount++;
+            updateCounts();
+            render([i, j], [i, j], []);
+            await sleep(getDelay());
+        }
+
+        // 延遲函數
+        function sleep(ms) {
+            return new Promise(resolve => setTimeout(resolve, ms));
+        }
+
+        // 氣泡排序演算法
+        async function bubbleSort() {
+            const n = array.length;
+
+            for (let i = 0; i < n - 1; i++) {
+                let swapped = false;
+                const sortedIndices = Array.from({ length: n - i }, (_, idx) => n - 1 - idx);
+
+                for (let j = 0; j < n - i - 1; j++) {
+                    if (!isSorting) return;
+
+                    comparisonCount++;
+                    updateCounts();
+                    document.getElementById('stepInfo').textContent = 
+                        `第 ${i + 1} 輪 - 比較索引 ${j} 和 ${j + 1}`;
+
+                    render([j, j + 1], [], sortedIndices);
+                    await sleep(getDelay());
+
+                    if (array[j] > array[j + 1]) {
+                        await swap(j, j + 1);
+                        swapped = true;
+                    }
+                }
+
+                render([], [], sortedIndices);
+                await sleep(getDelay());
+
+                if (!swapped) break;
+            }
+
+            // 全部排序完成
+            render([], [], Array.from({ length: array.length }, (_, i) => i));
+            document.getElementById('stepInfo').textContent = '排序完成！';
+        }
+
+        // 開始排序
+        async function startSort() {
+            if (array.length === 0) {
+                generateRandomArray();
+            }
+
+            if (isSorting) return;
+
+            isSorting = true;
+            document.getElementById('startBtn').disabled = true;
+
+            resetCounts();
+            await bubbleSort();
+
+            isSorting = false;
+            document.getElementById('startBtn').disabled = false;
+        }
+
+        // 重置
+        function resetArray() {
+            isSorting = false;
+            document.getElementById('startBtn').disabled = false;
+            resetCounts();
+            document.getElementById('stepInfo').textContent = '就緒';
+            generateRandomArray();
+        }
+
+        // 初始化
+        window.addEventListener('load', generateRandomArray);
+    </script>
+</body>
+</html>
