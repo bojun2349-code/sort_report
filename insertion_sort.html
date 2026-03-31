@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>選擇排序法 (Selection Sort)</title>
+    <title>插入排序法 (Insertion Sort)</title>
     <style>
         * {
             margin: 0;
@@ -16,9 +16,8 @@
             background: linear-gradient(135deg, #f0f4f8 0%, #e8eef7 50%, #f0f4f8 100%);
             min-height: 100vh;
             padding: 20px;
-            display: flex;
-            justify-content: center;
-            align-items: center;
+            display: block;
+            text-align: center;
         }
 
         .container {
@@ -26,8 +25,9 @@
             border-radius: 0;
             box-shadow: none;
             padding: 40px 60px;
-            max-width: 100%;
             width: 100%;
+            margin: 0;
+            position: relative;
         }
 
         h1 {
@@ -223,7 +223,7 @@
 
         .bar {
             width: 25px;
-            background: #667eea;
+            background: linear-gradient(180deg, #667eea 0%, #5568d3 100%);
             border-radius: 4px 4px 0 0;
             transition: all 0.05s ease;
             position: relative;
@@ -235,18 +235,19 @@
             font-weight: bold;
             padding-bottom: 3px;
             min-height: 20px;
+            box-shadow: 0 2px 5px rgba(102, 126, 234, 0.2);
         }
 
-        .bar.searching {
-            background: #f56565;
+        .bar.comparing {
+            background: linear-gradient(180deg, #f56565 0%, #e53e3e 100%);
         }
 
         .bar.sorted {
-            background: #48bb78;
+            background: linear-gradient(180deg, #48bb78 0%, #38a169 100%);
         }
 
         .bar.swapping {
-            background: #ed8936;
+            background: linear-gradient(180deg, #ed8936 0%, #dd6b20 100%);
         }
 
         .info-box {
@@ -316,6 +317,9 @@
             border-radius: 5px;
             font-weight: 600;
             transition: all 0.3s ease;
+            position: fixed;
+            top: 20px;
+            left: 60px;
         }
 
         .back-link:hover {
@@ -354,25 +358,25 @@
 <body>
     <div class="container">
         <a href="index.html" class="back-link">← 返回首頁</a>
-        <h1>🎯 選擇排序法</h1>
-        <p class="subtitle">Selection Sort - 可視化演示與詳細解釋</p>
+        <h1>🔄 插入排序法</h1>
+        <p class="subtitle">Insertion Sort - 可視化演示與詳細解釋</p>
 
         <div class="content">
             <!-- 介紹部分 -->
             <div class="intro-section">
-                <h2>什麼是選擇排序法？</h2>
-                <p>選擇排序法是一種直觀的排序演算法。每次從未排序的部分中找出最小（或最大）的元素，將其放到已排序部分的末尾，直到整個陣列排序完成。</p>
+                <h2>什麼是插入排序法？</h2>
+                <p>插入排序法是一種簡單的排序演算法，透過將未排序的元素插入到已排序部分的正確位置來完成排序。</p>
                 
                 <h2 style="margin-top: 20px;">演算法特點</h2>
                 <ul>
-                    <li><strong>簡單易懂：</strong>邏輯清晰，容易理解和實現</li>
+                    <li><strong>簡單直觀：</strong>類似整理撲克牌的過程</li>
+                    <li><strong>穩定排序：</strong>相等元素的相對位置不改變</li>
                     <li><strong>原地排序：</strong>不需要額外的記憶體空間</li>
-                    <li><strong>不穩定排序：</strong>相等元素的相對位置可能改變</li>
-                    <li><strong>效率一般：</strong>時間複雜度恆為 O(n²)</li>
+                    <li><strong>適應性強：</strong>對於部分有序的陣列效率較高</li>
                 </ul>
 
                 <h2 style="margin-top: 20px;">排序原理</h2>
-                <p>把陣列分為「已排序」和「未排序」兩個部分。每次從未排序部分找到最小元素，放到已排序部分的末尾。就像在一堆數字中一次次「選出」最小的放在前面。</p>
+                <p>將陣列分為已排序和未排序兩部分，每次從未排序部分取出第一個元素，插入到已排序部分的正確位置。</p>
             </div>
 
             <!-- 可視化部分 -->
@@ -419,8 +423,8 @@
                 <tbody>
                     <tr>
                         <td>最好情況</td>
-                        <td>O(n²)</td>
-                        <td>陣列已排序，仍需進行所有比較</td>
+                        <td>O(n)</td>
+                        <td>陣列已排序，只需一次掃描</td>
                     </tr>
                     <tr>
                         <td>平均情況</td>
@@ -430,7 +434,7 @@
                     <tr>
                         <td>最壞情況</td>
                         <td>O(n²)</td>
-                        <td>陣列反向排序，需要所有比較</td>
+                        <td>陣列反向排序，需要最多比較</td>
                     </tr>
                     <tr>
                         <td>空間複雜度</td>
@@ -445,12 +449,13 @@
         <div class="complexity-section">
             <h2>詳細步驟</h2>
             <ol style="color: #555; line-height: 2; margin-left: 20px;">
-                <li>從未排序部分中找到最小的元素</li>
-                <li>將其與未排序部分的第一個元素交換</li>
-                <li>這樣最小元素就被放到了已排序部分的末尾</li>
-                <li>已排序部分向後擴展一個位置</li>
-                <li>重複步驟 1-4，直到未排序部分變空</li>
-                <li>整個陣列排序完成</li>
+                <li>將陣列的第一個元素視為已排序部分</li>
+                <li>從第二個元素開始，取出當前元素</li>
+                <li>將當前元素與已排序部分的元素從右向左比較</li>
+                <li>如果當前元素小於已排序元素，將已排序元素向右移動</li>
+                <li>重複比較直到找到正確位置或到達陣列開頭</li>
+                <li>將當前元素插入到正確位置</li>
+                <li>重複步驟 2-6 直到所有元素排序完成</li>
             </ol>
         </div>
     </div>
@@ -529,7 +534,7 @@
         }
 
         // 渲染陣列
-        function render(searchingIndices = [], swappingIndices = [], sortedIndices = []) {
+        function render(comparingIndices = [], swappingIndices = [], sortedIndices = []) {
             const container = document.getElementById('arrayContainer');
             container.innerHTML = '';
 
@@ -545,20 +550,24 @@
                     bar.classList.add('sorted');
                 } else if (swappingIndices.includes(index)) {
                     bar.classList.add('swapping');
-                } else if (searchingIndices.includes(index)) {
-                    bar.classList.add('searching');
+                } else if (comparingIndices.includes(index)) {
+                    bar.classList.add('comparing');
                 }
 
                 container.appendChild(bar);
             });
         }
 
-        // 交換元素
-        async function swap(i, j) {
-            [array[i], array[j]] = [array[j], array[i]];
+        // 插入元素
+        async function insertElement(fromIndex, toIndex) {
+            const value = array[fromIndex];
+            for (let i = fromIndex; i > toIndex; i--) {
+                array[i] = array[i - 1];
+            }
+            array[toIndex] = value;
             swapCount++;
             updateCounts();
-            render([i, j], [i, j], []);
+            render([toIndex], [toIndex], Array.from({ length: toIndex }, (_, i) => i));
             await sleep(getDelay());
         }
 
@@ -567,43 +576,42 @@
             return new Promise(resolve => setTimeout(resolve, ms));
         }
 
-        // 選擇排序演算法
-        async function selectionSort() {
+        // 插入排序演算法
+        async function insertionSort() {
             const n = array.length;
 
-            for (let i = 0; i < n - 1; i++) {
-                let minIndex = i;
-                const sortedIndices = Array.from({ length: i + 1 }, (_, idx) => idx);
+            for (let i = 1; i < n; i++) {
+                if (!isSorting) return;
 
-                // 查找最小元素
-                for (let j = i + 1; j < n; j++) {
+                const key = array[i];
+                let j = i - 1;
+
+                document.getElementById('stepInfo').textContent = 
+                    `處理索引 ${i} 的元素 (${key})`;
+
+                render([], [i], Array.from({ length: i }, (_, idx) => idx));
+                await sleep(getDelay());
+
+                while (j >= 0 && array[j] > key) {
                     if (!isSorting) return;
 
                     comparisonCount++;
                     updateCounts();
                     document.getElementById('stepInfo').textContent = 
-                        `第 ${i + 1} 輪 - 搜尋: 比較索引 ${minIndex} 和 ${j}`;
+                        `比較索引 ${j} (${array[j]}) 和 ${key}`;
 
-                    const searchingIndices = [minIndex, j];
-                    render(searchingIndices, [], sortedIndices);
+                    render([j, i], [i], Array.from({ length: i }, (_, idx) => idx));
                     await sleep(getDelay());
 
-                    if (array[j] < array[minIndex]) {
-                        minIndex = j;
-                    }
+                    j--;
                 }
 
-                // 交換最小元素到正確位置
-                if (minIndex !== i) {
-                    document.getElementById('stepInfo').textContent = 
-                        `第 ${i + 1} 輪 - 交換索引 ${i} 和 ${minIndex}`;
-                    await swap(i, minIndex);
+                if (j + 1 !== i) {
+                    await insertElement(i, j + 1);
+                } else {
+                    render([], [], Array.from({ length: i + 1 }, (_, idx) => idx));
+                    await sleep(getDelay());
                 }
-
-                // 顯示已排序部分
-                const newSortedIndices = Array.from({ length: i + 2 }, (_, idx) => idx);
-                render([], [], newSortedIndices);
-                await sleep(getDelay());
             }
 
             // 全部排序完成
@@ -623,7 +631,7 @@
             document.getElementById('startBtn').disabled = true;
 
             resetCounts();
-            await selectionSort();
+            await insertionSort();
 
             isSorting = false;
             document.getElementById('startBtn').disabled = false;
@@ -642,4 +650,5 @@
         window.addEventListener('load', generateRandomArray);
     </script>
 </body>
-</html>
+</html></content>
+<parameter name="filePath">d:\zpj\workspace\sort_report\insertion_sort.html

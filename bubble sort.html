@@ -13,7 +13,7 @@
 
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: #1a1a1a;
+            background: linear-gradient(135deg, #f0f4f8 0%, #e8eef7 50%, #f0f4f8 100%);
             min-height: 100vh;
             padding: 20px;
             display: flex;
@@ -22,11 +22,11 @@
         }
 
         .container {
-            background: white;
-            border-radius: 15px;
-            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.8);
-            padding: 40px;
-            max-width: 1000px;
+            background: linear-gradient(to bottom, #ffffff 0%, #f8fafc 100%);
+            border-radius: 0;
+            box-shadow: none;
+            padding: 40px 60px;
+            max-width: 100%;
             width: 100%;
         }
 
@@ -47,14 +47,21 @@
         .content {
             display: grid;
             grid-template-columns: 1fr 1fr;
-            gap: 30px;
+            gap: 40px;
             margin-bottom: 30px;
         }
 
         .intro-section, .visualization-section {
-            padding: 20px;
-            background: #f8f9fa;
-            border-radius: 10px;
+            padding: 25px;
+            background: linear-gradient(135deg, #f8f9fa 0%, #e8eef7 100%);
+            border-radius: 15px;
+            border: 2px solid #e0e7ff;
+            transition: all 0.3s ease;
+        }
+
+        .intro-section:hover, .visualization-section:hover {
+            border-color: #667eea;
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.2);
         }
 
         .intro-section h2 {
@@ -94,13 +101,18 @@
         }
 
         button {
-            padding: 10px 20px;
+            padding: 12px 24px;
             border: none;
-            border-radius: 5px;
+            border-radius: 8px;
             cursor: pointer;
             font-size: 0.95em;
             font-weight: 600;
             transition: all 0.3s ease;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        button:hover {
+            transform: translateY(-2px);
         }
 
         #startBtn {
@@ -202,15 +214,16 @@
             justify-content: center;
             gap: 4px;
             height: 250px;
-            background: white;
-            border-radius: 8px;
+            background: linear-gradient(to bottom, #f0f4ff, #ffffff);
+            border-radius: 12px;
             padding: 20px;
             margin-bottom: 15px;
+            border: 2px solid #e0e7ff;
         }
 
         .bar {
             width: 25px;
-            background: #667eea;
+            background: linear-gradient(180deg, #667eea 0%, #5568d3 100%);
             border-radius: 4px 4px 0 0;
             transition: all 0.05s ease;
             position: relative;
@@ -222,26 +235,28 @@
             font-weight: bold;
             padding-bottom: 3px;
             min-height: 20px;
+            box-shadow: 0 2px 5px rgba(102, 126, 234, 0.2);
         }
 
         .bar.comparing {
-            background: #f56565;
+            background: linear-gradient(180deg, #f56565 0%, #e53e3e 100%);
         }
 
         .bar.sorted {
-            background: #48bb78;
+            background: linear-gradient(180deg, #48bb78 0%, #38a169 100%);
         }
 
         .bar.swapping {
-            background: #ed8936;
+            background: linear-gradient(180deg, #ed8936 0%, #dd6b20 100%);
         }
 
         .info-box {
-            background: white;
-            padding: 15px;
-            border-radius: 8px;
-            border-left: 4px solid #667eea;
+            background: linear-gradient(135deg, #ffffff 0%, #f0f4ff 100%);
+            padding: 20px;
+            border-radius: 12px;
+            border-left: 5px solid #667eea;
             margin-top: 15px;
+            box-shadow: 0 3px 10px rgba(102, 126, 234, 0.15);
         }
 
         .info-box p {
@@ -257,9 +272,10 @@
 
         .complexity-section {
             margin-top: 30px;
-            padding: 20px;
-            background: #f8f9fa;
-            border-radius: 10px;
+            padding: 25px;
+            background: linear-gradient(135deg, #f8f9fa 0%, #e8eef7 100%);
+            border-radius: 15px;
+            border: 2px solid #e0e7ff;
         }
 
         .complexity-section h2 {
@@ -301,6 +317,9 @@
             border-radius: 5px;
             font-weight: 600;
             transition: all 0.3s ease;
+            position: fixed;
+            top: 20px;
+            left: 60px;
         }
 
         .back-link:hover {
