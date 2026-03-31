@@ -1,0 +1,676 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>合併排序法 (Merge Sort)</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #f0f4f8 0%, #e8eef7 50%, #f0f4f8 100%);
+            min-height: 100vh;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .container {
+            background: linear-gradient(to bottom, #ffffff 0%, #f8fafc 100%);
+            border-radius: 0;
+            box-shadow: none;
+            padding: 40px 60px;
+            max-width: 100%;
+            width: 100%;
+        }
+
+        h1 {
+            text-align: center;
+            color: #333;
+            margin-bottom: 10px;
+            font-size: 2.5em;
+        }
+
+        .subtitle {
+            text-align: center;
+            color: #666;
+            margin-bottom: 30px;
+            font-size: 1.1em;
+        }
+
+        .content {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 40px;
+            margin-bottom: 30px;
+        }
+
+        .intro-section, .visualization-section {
+            padding: 25px;
+            background: linear-gradient(135deg, #f8f9fa 0%, #e8eef7 100%);
+            border-radius: 15px;
+            border: 2px solid #e0e7ff;
+            transition: all 0.3s ease;
+        }
+
+        .intro-section:hover, .visualization-section:hover {
+            border-color: #667eea;
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.2);
+        }
+
+        .intro-section h2 {
+            color: #667eea;
+            margin-bottom: 15px;
+            font-size: 1.3em;
+        }
+
+        .intro-section p {
+            color: #555;
+            line-height: 1.8;
+            margin-bottom: 12px;
+            font-size: 0.95em;
+        }
+
+        .intro-section ul {
+            margin-left: 20px;
+            color: #555;
+            line-height: 1.8;
+        }
+
+        .intro-section li {
+            margin-bottom: 8px;
+        }
+
+        .visualization-section h2 {
+            color: #667eea;
+            margin-bottom: 20px;
+            font-size: 1.3em;
+        }
+
+        .controls {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+
+        button {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 0.95em;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        button:hover {
+            transform: translateY(-2px);
+        }
+
+        #startBtn {
+            background: #667eea;
+            color: white;
+        }
+
+        #startBtn:hover:not(:disabled) {
+            background: #5568d3;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        }
+
+        #startBtn:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+        }
+
+        #resetBtn {
+            background: #48bb78;
+            color: white;
+        }
+
+        #resetBtn:hover {
+            background: #38a169;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(72, 187, 120, 0.4);
+        }
+
+        #randomBtn {
+            background: #ed8936;
+            color: white;
+        }
+
+        #randomBtn:hover {
+            background: #dd6b20;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(237, 137, 54, 0.4);
+        }
+
+        .speed-control {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .speed-control label {
+            color: #555;
+            font-weight: 600;
+        }
+
+        .speed-control input[type="range"] {
+            width: 150px;
+        }
+
+        .input-section {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 15px;
+            flex-wrap: wrap;
+            align-items: center;
+        }
+
+        .input-section label {
+            color: #555;
+            font-weight: 600;
+            font-size: 0.95em;
+        }
+
+        .input-section input[type="text"] {
+            flex: 1;
+            min-width: 200px;
+            padding: 8px 12px;
+            border: 2px solid #ddd;
+            border-radius: 5px;
+            font-size: 0.95em;
+            transition: border-color 0.3s ease;
+        }
+
+        .input-section input[type="text"]:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        #inputBtn {
+            background: #9f7aea;
+            color: white;
+        }
+
+        #inputBtn:hover {
+            background: #805ad5;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(159, 122, 234, 0.4);
+        }
+
+        .array-container {
+            display: flex;
+            align-items: flex-end;
+            justify-content: center;
+            gap: 4px;
+            height: 250px;
+            background: linear-gradient(to bottom, #f0f4ff, #ffffff);
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 15px;
+            border: 2px solid #e0e7ff;
+        }
+
+        .bar {
+            width: 25px;
+            background: linear-gradient(180deg, #667eea 0%, #5568d3 100%);
+            border-radius: 4px 4px 0 0;
+            transition: all 0.05s ease;
+            position: relative;
+            display: flex;
+            align-items: flex-end;
+            justify-content: center;
+            color: white;
+            font-size: 10px;
+            font-weight: bold;
+            padding-bottom: 3px;
+            min-height: 20px;
+            box-shadow: 0 2px 5px rgba(102, 126, 234, 0.2);
+        }
+
+        .bar.comparing {
+            background: linear-gradient(180deg, #f56565 0%, #e53e3e 100%);
+        }
+
+        .bar.sorted {
+            background: linear-gradient(180deg, #48bb78 0%, #38a169 100%);
+        }
+
+        .bar.merging {
+            background: linear-gradient(180deg, #ed8936 0%, #dd6b20 100%);
+        }
+
+        .info-box {
+            background: linear-gradient(135deg, #ffffff 0%, #f0f4ff 100%);
+            padding: 20px;
+            border-radius: 12px;
+            border-left: 5px solid #667eea;
+            margin-top: 15px;
+            box-shadow: 0 3px 10px rgba(102, 126, 234, 0.15);
+        }
+
+        .info-box p {
+            color: #555;
+            margin: 5px 0;
+            font-size: 0.9em;
+        }
+
+        .step-info {
+            color: #667eea;
+            font-weight: 600;
+        }
+
+        .complexity-section {
+            margin-top: 30px;
+            padding: 25px;
+            background: linear-gradient(135deg, #f8f9fa 0%, #e8eef7 100%);
+            border-radius: 15px;
+            border: 2px solid #e0e7ff;
+        }
+
+        .complexity-section h2 {
+            color: #667eea;
+            margin-bottom: 15px;
+        }
+
+        .complexity-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 15px;
+        }
+
+        .complexity-table th,
+        .complexity-table td {
+            padding: 10px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+            color: #555;
+        }
+
+        .complexity-table th {
+            background: #667eea;
+            color: white;
+            font-weight: 600;
+        }
+
+        .complexity-table tr:hover {
+            background: #f0f0f0;
+        }
+
+        .back-link {
+            display: inline-block;
+            margin-bottom: 20px;
+            padding: 10px 20px;
+            background: #667eea;
+            color: white;
+            text-decoration: none;
+            border-radius: 5px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            position: fixed;
+            top: 20px;
+            left: 60px;
+        }
+
+        .back-link:hover {
+            background: #5568d3;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        }
+
+        @media (max-width: 768px) {
+            .content {
+                grid-template-columns: 1fr;
+            }
+
+            h1 {
+                font-size: 1.8em;
+            }
+
+            .array-container {
+                height: 200px;
+            }
+
+            .bar {
+                width: 20px;
+            }
+
+            .controls {
+                flex-direction: column;
+            }
+
+            button {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <a href="index.html" class="back-link">← 返回首頁</a>
+        <h1>🔀 合併排序法</h1>
+        <p class="subtitle">Merge Sort - 可視化演示與詳細解釋</p>
+
+        <div class="content">
+            <!-- 介紹部分 -->
+            <div class="intro-section">
+                <h2>什麼是合併排序法？</h2>
+                <p>合併排序是一種分治型排序演算法，通過遞迴地將陣列分成更小的子陣列，分別排序，然後將排序好的子陣列合併回去。</p>
+                
+                <h2 style="margin-top: 20px;">演算法特點</h2>
+                <ul>
+                    <li><strong>分治策略：</strong>採用分治法，遞迴分解和合併</li>
+                    <li><strong>穩定排序：</strong>相等元素的相對位置不改變</li>
+                    <li><strong>高效性：</strong>時間複雜度穩定為O(n log n)</li>
+                    <li><strong>額外空間：</strong>需要O(n)的額外空間用於合併</li>
+                </ul>
+
+                <h2 style="margin-top: 20px;">排序原理</h2>
+                <p>將陣列不斷二分，直到每個部分只有一個元素，然後將相鄰的部分有序地合併，最終得到完全排序的陣列。</p>
+            </div>
+
+            <!-- 可視化部分 -->
+            <div class="visualization-section">
+                <h2>互動演示</h2>
+                
+                <div class="input-section">
+                    <label for="numberInput">輸入數字：</label>
+                    <input type="text" id="numberInput" placeholder="例如：5, 2, 8, 1, 9（用逗號或空格分隔）">
+                    <button id="inputBtn" onclick="setCustomArray()">設定</button>
+                </div>
+                
+                <div class="controls">
+                    <button id="startBtn" onclick="startSort()">開始排序</button>
+                    <button id="resetBtn" onclick="resetArray()">重置</button>
+                    <button id="randomBtn" onclick="generateRandomArray()">隨機生成</button>
+                    <div class="speed-control">
+                        <label for="speedSlider">速度：</label>
+                        <input type="range" id="speedSlider" min="10" max="100" value="50">
+                    </div>
+                </div>
+
+                <div class="array-container" id="arrayContainer"></div>
+
+                <div class="info-box">
+                    <p><span class="step-info">比較次數：</span><span id="comparisonCount">0</span></p>
+                    <p><span class="step-info">合併次數：</span><span id="mergeCount">0</span></p>
+                    <p><span class="step-info">當前步驟：</span><span id="stepInfo">就緒</span></p>
+                </div>
+            </div>
+        </div>
+
+        <!-- 複雜度分析 -->
+        <div class="complexity-section">
+            <h2>時間與空間複雜度</h2>
+            <table class="complexity-table">
+                <thead>
+                    <tr>
+                        <th>情景</th>
+                        <th>時間複雜度</th>
+                        <th>說明</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>最好情況</td>
+                        <td>O(n log n)</td>
+                        <td>任何情況下都需要進行分割和合併</td>
+                    </tr>
+                    <tr>
+                        <td>平均情況</td>
+                        <td>O(n log n)</td>
+                        <td>穩定的效能表現</td>
+                    </tr>
+                    <tr>
+                        <td>最壞情況</td>
+                        <td>O(n log n)</td>
+                        <td>性能保證，不隨數據變化</td>
+                    </tr>
+                    <tr>
+                        <td>空間複雜度</td>
+                        <td>O(n)</td>
+                        <td>合併過程需要額外的暫存空間</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <!-- 演算法步驟 -->
+        <div class="complexity-section">
+            <h2>詳細步驟</h2>
+            <ol style="color: #555; line-height: 2; margin-left: 20px;">
+                <li>將陣列從中點分成兩個子陣列</li>
+                <li>遞迴地對左子陣列執行合併排序</li>
+                <li>遞迴地對右子陣列執行合併排序</li>
+                <li>遞迴的基本情況：子陣列只有一個元素時停止</li>
+                <li>將兩個已排序的子陣列合併成一個排序的陣列</li>
+                <li>比較兩個子陣列的首元素，將較小的加入結果</li>
+                <li>重複步驟 6 直到其中一個子陣列為空</li>
+                <li>將剩餘元素加入結果陣列</li>
+            </ol>
+        </div>
+    </div>
+
+    <script>
+        let array = [];
+        let isSorting = false;
+        let comparisonCount = 0;
+        let mergeCount = 0;
+
+        // 設定自定義陣列
+        function setCustomArray() {
+            const input = document.getElementById('numberInput').value.trim();
+            
+            if (!input) {
+                alert('請輸入數字！');
+                return;
+            }
+
+            try {
+                // 支援逗號或空格分隔
+                const numbers = input.split(/[,\s]+/)
+                    .filter(n => n.trim() !== '')
+                    .map(n => parseInt(n.trim()));
+
+                // 驗證所有輸入都是有效的數字
+                if (numbers.some(n => isNaN(n))) {
+                    alert('請輸入有效的數字！');
+                    return;
+                }
+
+                if (numbers.length === 0) {
+                    alert('請輸入至少一個數字！');
+                    return;
+                }
+
+                array = numbers;
+                resetCounts();
+                document.getElementById('stepInfo').textContent = '就緒';
+                render();
+                alert(`已設定 ${numbers.length} 個數字，點擊「開始排序」開始！`);
+            } catch (error) {
+                alert('輸入格式錯誤，請檢查！');
+            }
+        }
+
+        // 初始化陣列
+        function generateRandomArray() {
+            array = [];
+            const arraySize = 20;
+            for (let i = 0; i < arraySize; i++) {
+                array.push(Math.floor(Math.random() * 100) + 1);
+            }
+            resetCounts();
+            document.getElementById('numberInput').value = '';
+            render();
+        }
+
+        // 重置統計
+        function resetCounts() {
+            comparisonCount = 0;
+            mergeCount = 0;
+            updateCounts();
+        }
+
+        // 更新統計資訊
+        function updateCounts() {
+            document.getElementById('comparisonCount').textContent = comparisonCount;
+            document.getElementById('mergeCount').textContent = mergeCount;
+        }
+
+        // 獲取延遲時間
+        function getDelay() {
+            const speed = document.getElementById('speedSlider').value;
+            return 101 - speed;
+        }
+
+        // 渲染陣列
+        function render(comparingIndices = [], mergingIndices = [], sortedIndices = []) {
+            const container = document.getElementById('arrayContainer');
+            container.innerHTML = '';
+
+            const maxValue = Math.max(...array);
+
+            array.forEach((value, index) => {
+                const bar = document.createElement('div');
+                bar.className = 'bar';
+                bar.style.height = (value / maxValue) * 200 + 'px';
+                bar.textContent = value;
+
+                if (sortedIndices.includes(index)) {
+                    bar.classList.add('sorted');
+                } else if (mergingIndices.includes(index)) {
+                    bar.classList.add('merging');
+                } else if (comparingIndices.includes(index)) {
+                    bar.classList.add('comparing');
+                }
+
+                container.appendChild(bar);
+            });
+        }
+
+        // 延遲函數
+        function sleep(ms) {
+            return new Promise(resolve => setTimeout(resolve, ms));
+        }
+
+        // 合併排序演算法
+        async function mergeSort(left = 0, right = array.length - 1, sortedIndices = []) {
+            if (!isSorting) return;
+
+            if (left >= right) {
+                render([], [], [...sortedIndices, left]);
+                await sleep(getDelay());
+                return;
+            }
+
+            const mid = Math.floor((left + right) / 2);
+
+            // 遞迴排序左半部分
+            await mergeSort(left, mid, sortedIndices);
+
+            // 遞迴排序右半部分
+            await mergeSort(mid + 1, right, sortedIndices);
+
+            // 合併兩部分
+            await merge(left, mid, right, sortedIndices);
+        }
+
+        // 合併函數
+        async function merge(left, mid, right, sortedIndices) {
+            const leftArray = array.slice(left, mid + 1);
+            const rightArray = array.slice(mid + 1, right + 1);
+
+            let i = 0, j = 0, k = left;
+
+            document.getElementById('stepInfo').textContent = 
+                `合併 [${left}..${mid}] 和 [${mid + 1}..${right}]`;
+
+            while (i < leftArray.length && j < rightArray.length) {
+                if (!isSorting) return;
+
+                comparisonCount++;
+                updateCounts();
+                mergeCount++;
+
+                const indices = [];
+                for (let idx = left; idx <= right; idx++) {
+                    indices.push(idx);
+                }
+
+                render(
+                    [left + i, mid + 1 + j],
+                    [left + i, mid + 1 + j],
+                    sortedIndices
+                );
+                await sleep(getDelay());
+
+                if (leftArray[i] <= rightArray[j]) {
+                    array[k++] = leftArray[i++];
+                } else {
+                    array[k++] = rightArray[j++];
+                }
+            }
+
+            while (i < leftArray.length) {
+                array[k++] = leftArray[i++];
+            }
+
+            while (j < rightArray.length) {
+                array[k++] = rightArray[j++];
+            }
+
+            const newSortedIndices = [];
+            for (let idx = left; idx <= right; idx++) {
+                newSortedIndices.push(idx);
+            }
+
+            render([], [], [...sortedIndices, ...newSortedIndices]);
+            await sleep(getDelay());
+        }
+
+        // 開始排序
+        async function startSort() {
+            if (array.length === 0) {
+                generateRandomArray();
+            }
+
+            if (isSorting) return;
+
+            isSorting = true;
+            document.getElementById('startBtn').disabled = true;
+
+            resetCounts();
+            await mergeSort();
+
+            render([], [], Array.from({ length: array.length }, (_, i) => i));
+            document.getElementById('stepInfo').textContent = '排序完成！';
+
+            isSorting = false;
+            document.getElementById('startBtn').disabled = false;
+        }
+
+        // 重置
+        function resetArray() {
+            isSorting = false;
+            document.getElementById('startBtn').disabled = false;
+            resetCounts();
+            document.getElementById('stepInfo').textContent = '就緒';
+            generateRandomArray();
+        }
+
+        // 初始化
+        window.addEventListener('load', generateRandomArray);
+    </script>
+</body>
+</html>
