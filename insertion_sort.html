@@ -307,6 +307,21 @@
             background: #f0f0f0;
         }
 
+        pre {
+            background: #e2e8f0;
+            padding: 18px;
+            border-radius: 12px;
+            overflow-x: auto;
+            border: 1px solid #cbd5e1;
+            margin-bottom: 20px;
+            font-size: 0.95em;
+        }
+
+        code {
+            font-family: 'Courier New', Courier, monospace;
+            color: #1e3a8a;
+        }
+
         .back-link {
             display: inline-block;
             margin-bottom: 20px;
@@ -457,6 +472,54 @@
                 <li>將當前元素插入到正確位置</li>
                 <li>重複步驟 2-6 直到所有元素排序完成</li>
             </ol>
+        </div>
+
+        <div class="complexity-section">
+            <h2>虛擬碼與實際程式碼對照</h2>
+            <p>這裡展示 Insertion Sort 的主要邏輯，讓虛擬碼與 JavaScript 程式碼一一對應。</p>
+            <h3>虛擬碼</h3>
+            <pre><code>function insertionSort(arr):
+    for i in 1..length(arr)-1:
+        key = arr[i]
+        j = i - 1
+        while j >= 0 and arr[j] > key:
+            arr[j+1] = arr[j]
+            j = j - 1
+        arr[j+1] = key</code></pre>
+            <h3>JavaScript 對照</h3>
+            <pre><code>async function insertionSort() {
+    const n = array.length;
+    for (let i = 1; i < n; i++) {
+        if (!isSorting) return;
+        const key = array[i];
+        let j = i - 1;
+        while (j >= 0 && array[j] > key) {
+            array[j + 1] = array[j];
+            j--;
+            render([], [j + 1], Array.from({ length: i }, (_, idx) => idx));
+            await sleep(getDelay());
+        }
+        array[j + 1] = key;
+    }
+}</code></pre>
+            <h3>程式碼與動畫對應</h3>
+            <pre><code>const n = array.length;                    -> 取得資料長度，設定動畫資料範圍
+const key = array[i];                       -> 選取目前待插入的長條，顯示高亮狀態
+while (j >= 0 && array[j] > key) {         -> 比較待插入元素與已排序區域的元素
+array[j + 1] = array[j];                    -> 向右移動已排序元素，動畫模擬元素後移
+render(...);                                -> 更新畫面，顯示目前比較、移動與排序區域
+array[j + 1] = key;                         -> 將待插入元素放回正確位置，顯示插入動畫</code></pre>
+        </div>
+
+        <div class="complexity-section">
+            <h2>邊界條件（Boundary Conditions）</h2>
+            <ul>
+                <li><strong>空陣列：</strong>如果沒有元素，排序直接跳過。</li>
+                <li><strong>單元素：</strong>只有一個元素時，陣列已經排序完成。</li>
+                <li><strong>已排序陣列：</strong>若輸入已排序，演算法仍會遍歷但不會進行實質交換。</li>
+                <li><strong>部分已排序：</strong>插入排序對於部分已排序陣列效率較佳。</li>
+                <li><strong>重置中斷：</strong>若使用者在排序中按下重置，isSorting 會中止遞迴與渲染。</li>
+            </ul>
         </div>
     </div>
 

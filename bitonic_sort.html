@@ -257,6 +257,21 @@
             background: #f0f0f0;
         }
 
+        pre {
+            background: #e2e8f0;
+            padding: 18px;
+            border-radius: 12px;
+            overflow-x: auto;
+            border: 1px solid #cbd5e1;
+            margin-bottom: 20px;
+            font-size: 0.95em;
+        }
+
+        code {
+            font-family: 'Courier New', Courier, monospace;
+            color: #1e3a8a;
+        }
+
         .back-link {
             display: inline-block;
             margin-bottom: 20px;
@@ -407,6 +422,66 @@
                 <li>遞迴處理左右子序列，直到每段長度為 1。</li>
                 <li>最終回傳完整排序陣列。</li>
             </ol>
+        </div>
+
+        <div class="complexity-section">
+            <h2>虛擬碼與實際程式碼對照</h2>
+            <p>下方比較展示了雙調排序法的關鍵步驟與對應的 JavaScript 實作，讓演算法概念與程式流程更直觀。</p>
+            <h3>虛擬碼</h3>
+            <pre><code>function bitonicSort(start, count, direction):
+    if count <= 1:
+        return
+    mid = count / 2
+    bitonicSort(start, mid, ASCENDING)
+    bitonicSort(start + mid, mid, DESCENDING)
+    bitonicMerge(start, count, direction)
+
+function bitonicMerge(start, count, direction):
+    if count <= 1:
+        return
+    k = count / 2
+    for i in start .. start + k - 1:
+        compareAndSwap(i, i + k, direction)
+    bitonicMerge(start, k, direction)
+    bitonicMerge(start + k, k, direction)
+</code></pre>
+            <h3>實際 JavaScript 對照</h3>
+            <pre><code>async function bitonicSort(start, count, direction) {
+    if (count <= 1 || !isSorting) return;
+    const mid = Math.floor(count / 2);
+    await bitonicSort(start, mid, 1);
+    await bitonicSort(start + mid, count - mid, 0);
+    await bitonicMerge(start, count, direction);
+}
+
+async function bitonicMerge(start, count, direction) {
+    if (count <= 1 || !isSorting) return;
+    const k = Math.floor(count / 2);
+    for (let i = start; i < start + k; i++) {
+        await compareAndSwap(i, i + k, direction);
+    }
+    await bitonicMerge(start, k, direction);
+    await bitonicMerge(start + k, count - k, direction);
+}
+</code></pre>
+            <h3>程式碼與動畫對應</h3>
+            <pre><code>if (count <= 1 || !isSorting) return;   -> 無須排序或已取消時停止，動畫不再繼續
+const mid = Math.floor(count / 2);        -> 計算分割點，準備將區段分為上下兩部份
+await bitonicSort(start, mid, 1);         -> 遞迴建立升冪子序列，動畫呈現左側遞迴處理
+await bitonicSort(start + mid, count - mid, 0); -> 遞迴建立降冪子序列，動畫呈現右側遞迴處理
+await bitonicMerge(start, count, direction); -> 執行合併，動畫開始比較與交換成有序序列
+await compareAndSwap(i, i + k, direction); -> 比較成對元素並在動畫中交換位置</code></pre>
+        </div>
+
+        <div class="complexity-section">
+            <h2>邊界條件（Boundary Conditions）</h2>
+            <ul>
+                <li><strong>空陣列或單一元素：</strong>當 count <= 1 時，遞迴會立即結束，不進行比較與交換。</li>
+                <li><strong>非 2 的冪次長度：</strong>本示範僅支援元素數量為 2 的冪次，因為 bitonic sort 的分割與合併過程最適合此類長度。</li>
+                <li><strong>已排序或相等元素：</strong>演算法仍會進行比較，但若比較結果不需交換，資料順序保持不變。</li>
+                <li><strong>direction 參數：</strong>direction = 1 表示升冪排序，direction = 0 表示降冪排序；在遞迴內部，每次建立半段雙調序列的方向必須交替。</li>
+                <li><strong>使用者中斷：</strong>若在排序過程中重置，isSorting 會變成 false，遞迴函式會依據此狀態立即停止。</li>
+            </ul>
         </div>
     </div>
 

@@ -307,6 +307,21 @@
             background: #f0f0f0;
         }
 
+        pre {
+            background: #e2e8f0;
+            padding: 18px;
+            border-radius: 12px;
+            overflow-x: auto;
+            border: 1px solid #cbd5e1;
+            margin-bottom: 20px;
+            font-size: 0.95em;
+        }
+
+        code {
+            font-family: 'Courier New', Courier, monospace;
+            color: #1e3a8a;
+        }
+
         .back-link {
             display: inline-block;
             margin-bottom: 20px;
@@ -458,6 +473,62 @@
                 <li>重複步驟 6 直到其中一個子陣列為空</li>
                 <li>將剩餘元素加入結果陣列</li>
             </ol>
+        </div>
+
+        <div class="complexity-section">
+            <h2>虛擬碼與實際程式碼對照</h2>
+            <p>這裡顯示 Merge Sort 的分治邏輯，將虛擬碼與 JavaScript 的遞迴與合併步驟對照。</p>
+            <h3>虛擬碼</h3>
+            <pre><code>function mergeSort(arr):
+    if length(arr) <= 1:
+        return arr
+    mid = length(arr) / 2
+    left = mergeSort(arr[0:mid])
+    right = mergeSort(arr[mid:])
+    return merge(left, right)
+
+function merge(left, right):
+    result = []
+    while left and right:
+        if left[0] <= right[0]:
+            result.append(left.pop(0))
+        else:
+            result.append(right.pop(0))
+    return result + left + right</code></pre>
+            <h3>JavaScript 對照</h3>
+            <pre><code>async function mergeSort(left = 0, right = array.length - 1, sortedIndices = []) {
+    if (!isSorting) return;
+    if (left >= right) return;
+    const mid = Math.floor((left + right) / 2);
+    await mergeSort(left, mid, sortedIndices);
+    await mergeSort(mid + 1, right, sortedIndices);
+    await merge(left, mid, right, sortedIndices);
+}
+
+async function merge(left, mid, right, sortedIndices) {
+    const leftArray = array.slice(left, mid + 1);
+    const rightArray = array.slice(mid + 1, right + 1);
+    // 合併邏輯與比較行為
+}</code></pre>
+            <h3>程式碼與動畫對應</h3>
+            <pre><code>if (left >= right) return;                 -> 遞迴基底，當子區段長度為 0 或 1 時停止，不做動畫
+const mid = Math.floor((left + right) / 2);   -> 計算分割點，動畫將資料分成左右兩部分
+await mergeSort(left, mid,...);               -> 遞迴排序左半部分，動畫依序呈現左側子問題
+await mergeSort(mid + 1, right,...);         -> 遞迴排序右半部分，動畫呈現右側子問題
+await merge(left, mid, right,...);           -> 合併排序步驟，開始比較與放置元素動畫
+const leftArray = array.slice(...);           -> 建立左右暫存子陣列，用於合併過程的動畫比較
+// 合併邏輯與比較行為                   -> 在合併循環中，高亮比較的兩個元素並依結果放入排序位置</code></pre>
+        </div>
+
+        <div class="complexity-section">
+            <h2>邊界條件（Boundary Conditions）</h2>
+            <ul>
+                <li><strong>空陣列：</strong>如果 length 為 0，遞迴直接返回，無需排序。</li>
+                <li><strong>單元素：</strong>當 left >= right 時，子陣列已排序。</li>
+                <li><strong>相等元素：</strong>合併步驟會保持相等元素的相對順序。</li>
+                <li><strong>最大遞迴深度：</strong>陣列太大會增加遞迴次數，但時間複雜度仍為 O(n log n)。</li>
+                <li><strong>重置中斷：</strong>若排序過程中取消操作，isSorting 為 false，遞迴會立即停止。</li>
+            </ul>
         </div>
     </div>
 

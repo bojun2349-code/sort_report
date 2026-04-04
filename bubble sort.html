@@ -307,6 +307,21 @@
             background: #f0f0f0;
         }
 
+        pre {
+            background: #e2e8f0;
+            padding: 18px;
+            border-radius: 12px;
+            overflow-x: auto;
+            border: 1px solid #cbd5e1;
+            margin-bottom: 20px;
+            font-size: 0.95em;
+        }
+
+        code {
+            font-family: 'Courier New', Courier, monospace;
+            color: #1e3a8a;
+        }
+
         .back-link {
             display: inline-block;
             margin-bottom: 20px;
@@ -457,6 +472,55 @@
                 <li>忽略已排序的部分，重複步驟 1-5</li>
                 <li>直到整個陣列排序完成</li>
             </ol>
+        </div>
+
+        <div class="complexity-section">
+            <h2>虛擬碼與實際程式碼對照</h2>
+            <p>這裡展示 Bubble Sort 的核心邏輯，從演算法虛擬碼到 JavaScript 實作的對應。</p>
+            <h3>虛擬碼</h3>
+            <pre><code>function bubbleSort(arr):
+    n = length(arr)
+    for i in 0..n-2:
+        swapped = false
+        for j in 0..n-i-2:
+            if arr[j] > arr[j+1]:
+                swap(arr, j, j+1)
+                swapped = true
+        if not swapped:
+            break</code></pre>
+            <h3>JavaScript 對照</h3>
+            <pre><code>async function bubbleSort() {
+    const n = array.length;
+    for (let i = 0; i < n - 1; i++) {
+        let swapped = false;
+        for (let j = 0; j < n - i - 1; j++) {
+            if (!isSorting) return;
+            if (array[j] > array[j + 1]) {
+                await swap(j, j + 1);
+                swapped = true;
+            }
+        }
+        if (!swapped) break;
+    }
+}</code></pre>
+            <h3>程式碼與動畫對應</h3>
+            <pre><code>const n = array.length;                    -> 初始化資料長度，準備整體動畫範圍
+for (let i ... )                            -> 每一輪掃描開始，標示已排序右側區域
+for (let j ... )                            -> 比較相鄰兩根長條，動畫中高亮它們
+if (array[j] > array[j + 1])              -> 判斷是否需交換
+await swap(j, j + 1);                      -> 觸發兩根長條交換動畫
+if (!swapped) break;                       -> 偵測是否需要提前結束動畫</code></pre>
+        </div>
+
+        <div class="complexity-section">
+            <h2>邊界條件（Boundary Conditions）</h2>
+            <ul>
+                <li><strong>空陣列：</strong>當 array.length 為 0 時，排序不會執行。</li>
+                <li><strong>單元素：</strong>當 count = 1 時，陣列已經有序，無需比較。</li>
+                <li><strong>已排序陣列：</strong>演算法會在第一輪內偵測到沒有交換後提早結束，節省時間。</li>
+                <li><strong>反向排序：</strong>這是最壞情況，會觸發最多比較與交換。</li>
+                <li><strong>重置中斷：</strong>如果使用者在運行期間點擊重置，isSorting 變為 false，排序會立即終止。</li>
+            </ul>
         </div>
     </div>
 

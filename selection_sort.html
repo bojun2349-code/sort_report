@@ -306,6 +306,21 @@
             background: #f0f0f0;
         }
 
+        pre {
+            background: #e2e8f0;
+            padding: 18px;
+            border-radius: 12px;
+            overflow-x: auto;
+            border: 1px solid #cbd5e1;
+            margin-bottom: 20px;
+            font-size: 0.95em;
+        }
+
+        code {
+            font-family: 'Courier New', Courier, monospace;
+            color: #1e3a8a;
+        }
+
         .back-link {
             display: inline-block;
             margin-bottom: 20px;
@@ -452,6 +467,53 @@
                 <li>重複步驟 1-4，直到未排序部分變空</li>
                 <li>整個陣列排序完成</li>
             </ol>
+        </div>
+
+        <div class="complexity-section">
+            <h2>虛擬碼與實際程式碼對照</h2>
+            <p>這裡展示 Selection Sort 的關鍵流程，並比較虛擬碼與頁面中的 JavaScript 實作。</p>
+            <h3>虛擬碼</h3>
+            <pre><code>function selectionSort(arr):
+    n = length(arr)
+    for i in 0..n-2:
+        minIndex = i
+        for j in i+1..n-1:
+            if arr[j] < arr[minIndex]:
+                minIndex = j
+        swap(arr, i, minIndex)</code></pre>
+            <h3>JavaScript 對照</h3>
+            <pre><code>async function selectionSort() {
+    const n = array.length;
+    for (let i = 0; i < n - 1; i++) {
+        let minIndex = i;
+        for (let j = i + 1; j < n; j++) {
+            if (!isSorting) return;
+            if (array[j] < array[minIndex]) {
+                minIndex = j;
+            }
+        }
+        if (minIndex !== i) {
+            await swap(i, minIndex);
+        }
+    }
+}</code></pre>
+            <h3>程式碼與動畫對應</h3>
+            <pre><code>const n = array.length;                    -> 取得資料長度，準備選擇排序動畫
+let minIndex = i;                           -> 將當前未排序區段第一個元素設為最小值候選，動畫標記候選元素
+if (array[j] < array[minIndex]) {          -> 比較當前元素與最小值候選，更新候選最小值，動畫標示比較結果
+await swap(i, minIndex);                   -> 將最小值交換到已排序區段末端，動畫顯示實際交換動作
+}</code></pre>
+        </div>
+
+        <div class="complexity-section">
+            <h2>邊界條件（Boundary Conditions）</h2>
+            <ul>
+                <li><strong>空陣列：</strong>如果沒有元素，排序流程會立即結束。</li>
+                <li><strong>單元素：</strong>當只有一個元素時，選擇排序不做任何交換。</li>
+                <li><strong>已排序陣列：</strong>Selection Sort 仍會進行完整比較，但不一定交換。</li>
+                <li><strong>多個最小值：</strong>此演算法可能改變相等元素的相對順序，因此不穩定。</li>
+                <li><strong>重置中斷：</strong>若排序中途取消，isSorting 變更會使迴圈提前退出。</li>
+            </ul>
         </div>
     </div>
 
