@@ -515,19 +515,11 @@
             }
         }
 
-        function greatestPowerOfTwoLessThan(n) {
-            let k = 1;
-            while (k << 1 <= n) {
-                k <<= 1;
-            }
-            return k;
-        }
-
         async function bitonicMerge(start, count, direction) {
             if (count <= 1 || !isSorting) return;
 
-            const k = greatestPowerOfTwoLessThan(count);
-            for (let i = start; i < start + count - k; i++) {
+            const k = Math.floor(count / 2);
+            for (let i = start; i < start + k; i++) {
                 await compareAndSwap(i, i + k, direction);
             }
 

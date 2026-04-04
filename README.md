@@ -2,7 +2,7 @@
 
 學號: 11428251  
 姓名: 張博鈞  
-模擬頁面: file:///C:/workspace/sort_report/index.html
+模擬頁面: https://bojun2349-code.github.io/sort_report/
 
 ---
 
