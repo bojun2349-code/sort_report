@@ -1,0 +1,576 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>雙調排序法 (Bitonic Sort)</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #f0f4f8 0%, #e8eef7 50%, #f0f4f8 100%);
+            min-height: 100vh;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .container {
+            background: linear-gradient(to bottom, #ffffff 0%, #f8fafc 100%);
+            border-radius: 0;
+            box-shadow: none;
+            padding: 40px 60px;
+            max-width: 100%;
+            width: 100%;
+        }
+
+        h1 {
+            text-align: center;
+            color: #333;
+            margin-bottom: 10px;
+            font-size: 2.5em;
+        }
+
+        .subtitle {
+            text-align: center;
+            color: #666;
+            margin-bottom: 30px;
+            font-size: 1.1em;
+        }
+
+        .content {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 40px;
+            margin-bottom: 30px;
+        }
+
+        .intro-section, .visualization-section {
+            padding: 25px;
+            background: linear-gradient(135deg, #f8f9fa 0%, #e8eef7 100%);
+            border-radius: 15px;
+            border: 2px solid #e0e7ff;
+            transition: all 0.3s ease;
+        }
+
+        .intro-section:hover, .visualization-section:hover {
+            border-color: #667eea;
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.2);
+        }
+
+        .intro-section h2 {
+            color: #667eea;
+            margin-bottom: 15px;
+            font-size: 1.3em;
+        }
+
+        .intro-section p, .intro-section ul, .intro-section ol {
+            color: #555;
+            line-height: 1.8;
+            margin-bottom: 12px;
+            font-size: 0.95em;
+        }
+
+        .intro-section ul, .intro-section ol {
+            margin-left: 20px;
+        }
+
+        .visualization-section h2 {
+            color: #667eea;
+            margin-bottom: 20px;
+            font-size: 1.3em;
+        }
+
+        .controls {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+
+        button {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 0.95em;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        button:hover {
+            transform: translateY(-2px);
+        }
+
+        #startBtn {
+            background: #667eea;
+            color: white;
+        }
+
+        #startBtn:hover:not(:disabled) {
+            background: #5568d3;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        }
+
+        #startBtn:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+        }
+
+        #resetBtn {
+            background: #48bb78;
+            color: white;
+        }
+
+        #resetBtn:hover {
+            background: #38a169;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(72, 187, 120, 0.4);
+        }
+
+        #randomBtn {
+            background: #ed8936;
+            color: white;
+        }
+
+        #randomBtn:hover {
+            background: #dd6b20;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(237, 137, 54, 0.4);
+        }
+
+        #inputBtn {
+            background: #9f7aea;
+            color: white;
+        }
+
+        #inputBtn:hover {
+            background: #805ad5;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(159, 122, 234, 0.4);
+        }
+
+        .array-container {
+            display: flex;
+            align-items: flex-end;
+            justify-content: center;
+            gap: 4px;
+            height: 250px;
+            background: linear-gradient(to bottom, #f0f4ff, #ffffff);
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 15px;
+            border: 2px solid #e0e7ff;
+        }
+
+        .bar {
+            width: 25px;
+            background: linear-gradient(180deg, #667eea 0%, #5568d3 100%);
+            border-radius: 4px 4px 0 0;
+            transition: all 0.05s ease;
+            position: relative;
+            display: flex;
+            align-items: flex-end;
+            justify-content: center;
+            color: white;
+            font-size: 10px;
+            font-weight: bold;
+            padding-bottom: 3px;
+            min-height: 20px;
+            box-shadow: 0 2px 5px rgba(102, 126, 234, 0.2);
+        }
+
+        .bar.comparing {
+            background: linear-gradient(180deg, #f56565 0%, #e53e3e 100%);
+        }
+
+        .bar.sorted {
+            background: linear-gradient(180deg, #48bb78 0%, #38a169 100%);
+        }
+
+        .bar.swapping {
+            background: linear-gradient(180deg, #ed8936 0%, #dd6b20 100%);
+        }
+
+        .info-box {
+            background: linear-gradient(135deg, #ffffff 0%, #f0f4ff 100%);
+            padding: 20px;
+            border-radius: 12px;
+            border-left: 5px solid #667eea;
+            margin-top: 15px;
+            box-shadow: 0 3px 10px rgba(102, 126, 234, 0.15);
+        }
+
+        .info-box p {
+            color: #555;
+            margin: 5px 0;
+            font-size: 0.9em;
+        }
+
+        .step-info {
+            color: #667eea;
+            font-weight: 600;
+        }
+
+        .complexity-section {
+            margin-top: 30px;
+            padding: 25px;
+            background: linear-gradient(135deg, #f8f9fa 0%, #e8eef7 100%);
+            border-radius: 15px;
+            border: 2px solid #e0e7ff;
+        }
+
+        .complexity-section h2 {
+            color: #667eea;
+            margin-bottom: 15px;
+        }
+
+        .complexity-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 15px;
+        }
+
+        .complexity-table th,
+        .complexity-table td {
+            padding: 10px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+            color: #555;
+        }
+
+        .complexity-table th {
+            background: #667eea;
+            color: white;
+            font-weight: 600;
+        }
+
+        .complexity-table tr:hover {
+            background: #f0f0f0;
+        }
+
+        .back-link {
+            display: inline-block;
+            margin-bottom: 20px;
+            padding: 10px 20px;
+            background: #667eea;
+            color: white;
+            text-decoration: none;
+            border-radius: 5px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            position: fixed;
+            top: 20px;
+            left: 60px;
+        }
+
+        .back-link:hover {
+            background: #5568d3;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        }
+
+        @media (max-width: 768px) {
+            .content {
+                grid-template-columns: 1fr;
+            }
+
+            h1 {
+                font-size: 1.8em;
+            }
+
+            .array-container {
+                height: 200px;
+            }
+
+            .bar {
+                width: 20px;
+            }
+
+            .controls {
+                flex-direction: column;
+            }
+
+            button {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <a href="index.html" class="back-link">← 返回首頁</a>
+        <h1>🔺 雙調排序法</h1>
+        <p class="subtitle">Bitonic Sort - 演算法概念與互動示範</p>
+
+        <div class="content">
+            <div class="intro-section">
+                <h2>什麼是雙調排序法？</h2>
+                <p>雙調排序法是一種使用「雙調序列」的排序演算法，先將資料分割成遞增與遞減兩段，再透過合併步驟將它們轉成完整排序序列。</p>
+
+                <h2 style="margin-top: 20px;">雙調序列</h2>
+                <p>雙調序列由一段遞增和一段遞減序列組成，像是一個菱形或山形，稱為 bitonic sequence。</p>
+
+                <h2 style="margin-top: 20px;">演算法步驟</h2>
+                <ol>
+                    <li>把陣列分成兩個子序列，一個升冪、一個降冪。</li>
+                    <li>對兩個子序列遞迴進行雙調排序。</li>
+                    <li>執行雙調合併，將雙調序列整理成完全排序結果。</li>
+                </ol>
+
+                <h2 style="margin-top: 20px;">特性</h2>
+                <ul>
+                    <li><strong>平行友善：</strong>非常適合硬體加速或 SIMD 平行運算。</li>
+                    <li><strong>穩定性：</strong>演算法本身非穩定排序。</li>
+                    <li><strong>空間：</strong>主要使用遞迴和少量額外空間。</li>
+                    <li><strong>適合規格：</strong>在需要可預測比較步驟的情境中表現良好。</li>
+                </ul>
+            </div>
+
+            <div class="visualization-section">
+                <h2>互動演示</h2>
+                <div class="input-section">
+                    <label for="numberInput">輸入數字：</label>
+                    <input type="text" id="numberInput" placeholder="例如：10, 3, 8, 1, 6">
+                    <button id="inputBtn" onclick="setCustomArray()">設定</button>
+                </div>
+
+                <div class="controls">
+                    <button id="startBtn" onclick="startSort()">開始排序</button>
+                    <button id="resetBtn" onclick="resetArray()">重置</button>
+                    <button id="randomBtn" onclick="generateRandomArray()">隨機生成</button>
+                    <div class="speed-control">
+                        <label for="speedSlider">速度：</label>
+                        <input type="range" id="speedSlider" min="10" max="100" value="50">
+                    </div>
+                </div>
+
+                <div class="array-container" id="arrayContainer"></div>
+
+                <div class="info-box">
+                    <p><span class="step-info">比較次數：</span><span id="comparisonCount">0</span></p>
+                    <p><span class="step-info">交換次數：</span><span id="swapCount">0</span></p>
+                    <p><span class="step-info">當前步驟：</span><span id="stepInfo">就緒</span></p>
+                </div>
+            </div>
+        </div>
+
+        <div class="complexity-section">
+            <h2>時間與空間複雜度</h2>
+            <table class="complexity-table">
+                <thead>
+                    <tr>
+                        <th>情景</th>
+                        <th>時間複雜度</th>
+                        <th>說明</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>最好情況</td>
+                        <td>O(n log² n)</td>
+                        <td>比較次數固定，與輸入順序無關</td>
+                    </tr>
+                    <tr>
+                        <td>平均情況</td>
+                        <td>O(n log² n)</td>
+                        <td>遞迴合併需要多層比較</td>
+                    </tr>
+                    <tr>
+                        <td>最壞情況</td>
+                        <td>O(n log² n)</td>
+                        <td>固定深度的比較模式</td>
+                    </tr>
+                    <tr>
+                        <td>空間複雜度</td>
+                        <td>O(log² n)</td>
+                        <td>遞迴消耗額外堆疊空間</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <div class="complexity-section">
+            <h2>示範步驟</h2>
+            <p>若要理解雙調排序法，可以想像先把序列切成兩段，讓一段升冪、一段降冪，然後透過多次比較與交換，讓整個序列有序。</p>
+            <ol>
+                <li>建立雙調序列(bitonic sequence)。</li>
+                <li>執行 bitonic merge。</li>
+                <li>遞迴處理左右子序列，直到每段長度為 1。</li>
+                <li>最終回傳完整排序陣列。</li>
+            </ol>
+        </div>
+    </div>
+
+    <script>
+        let array = [];
+        let isSorting = false;
+        let comparisonCount = 0;
+        let swapCount = 0;
+
+        function setCustomArray() {
+            const input = document.getElementById('numberInput').value.trim();
+            if (!input) {
+                alert('請輸入數字！');
+                return;
+            }
+
+            const numbers = input.split(/[,\s]+/)
+                .filter(n => n.trim() !== '')
+                .map(n => parseInt(n.trim()));
+
+            if (numbers.some(n => isNaN(n))) {
+                alert('請輸入有效的數字！');
+                return;
+            }
+
+            if (numbers.length === 0) {
+                alert('請輸入至少一個數字！');
+                return;
+            }
+
+            array = numbers;
+            resetCounts();
+            document.getElementById('stepInfo').textContent = '就緒';
+            render();
+            alert(`已設定 ${numbers.length} 個數字，點擊「開始排序」開始！`);
+        }
+
+        function generateRandomArray() {
+            array = [];
+            const arraySize = 16;
+            for (let i = 0; i < arraySize; i++) {
+                array.push(Math.floor(Math.random() * 100) + 1);
+            }
+            resetCounts();
+            document.getElementById('numberInput').value = '';
+            render();
+        }
+
+        function resetCounts() {
+            comparisonCount = 0;
+            swapCount = 0;
+            updateCounts();
+        }
+
+        function updateCounts() {
+            document.getElementById('comparisonCount').textContent = comparisonCount;
+            document.getElementById('swapCount').textContent = swapCount;
+        }
+
+        function getDelay() {
+            const speed = document.getElementById('speedSlider').value;
+            return 101 - speed;
+        }
+
+        function render(comparingIndices = [], swappingIndices = [], sortedIndices = []) {
+            const container = document.getElementById('arrayContainer');
+            container.innerHTML = '';
+            const maxValue = Math.max(...array, 1);
+
+            array.forEach((value, index) => {
+                const bar = document.createElement('div');
+                bar.className = 'bar';
+                bar.style.height = (value / maxValue) * 200 + 'px';
+                bar.textContent = value;
+
+                if (sortedIndices.includes(index)) {
+                    bar.classList.add('sorted');
+                } else if (swappingIndices.includes(index)) {
+                    bar.classList.add('swapping');
+                } else if (comparingIndices.includes(index)) {
+                    bar.classList.add('comparing');
+                }
+
+                container.appendChild(bar);
+            });
+        }
+
+        function sleep(ms) {
+            return new Promise(resolve => setTimeout(resolve, ms));
+        }
+
+        async function compareAndSwap(i, j, direction) {
+            comparisonCount++;
+            updateCounts();
+            document.getElementById('stepInfo').textContent = `比較索引 ${i} 與 ${j}，方向 ${direction ? '升冪' : '降冪'}`;
+            render([i, j], [], []);
+            await sleep(getDelay());
+
+            const shouldSwap = direction ? array[i] > array[j] : array[i] < array[j];
+            if (shouldSwap) {
+                [array[i], array[j]] = [array[j], array[i]];
+                swapCount++;
+                updateCounts();
+                render([], [i, j], []);
+                await sleep(getDelay());
+            }
+        }
+
+        function greatestPowerOfTwoLessThan(n) {
+            let k = 1;
+            while (k << 1 <= n) {
+                k <<= 1;
+            }
+            return k;
+        }
+
+        async function bitonicMerge(start, count, direction) {
+            if (count <= 1 || !isSorting) return;
+
+            const k = greatestPowerOfTwoLessThan(count);
+            for (let i = start; i < start + count - k; i++) {
+                await compareAndSwap(i, i + k, direction);
+            }
+
+            await bitonicMerge(start, k, direction);
+            await bitonicMerge(start + k, count - k, direction);
+        }
+
+        async function bitonicSort(start, count, direction) {
+            if (count <= 1 || !isSorting) return;
+
+            const mid = Math.floor(count / 2);
+            await bitonicSort(start, mid, 1);
+            await bitonicSort(start + mid, count - mid, 0);
+            await bitonicMerge(start, count, direction);
+        }
+
+        async function startSort() {
+            if (array.length === 0) {
+                generateRandomArray();
+            }
+            if (isSorting) return;
+
+            isSorting = true;
+            document.getElementById('startBtn').disabled = true;
+            resetCounts();
+            await bitonicSort(0, array.length, 1);
+            if (isSorting) {
+                render([], [], Array.from({ length: array.length }, (_, i) => i));
+                document.getElementById('stepInfo').textContent = '排序完成！';
+            }
+            isSorting = false;
+            document.getElementById('startBtn').disabled = false;
+        }
+
+        function resetArray() {
+            isSorting = false;
+            document.getElementById('startBtn').disabled = false;
+            resetCounts();
+            document.getElementById('stepInfo').textContent = '就緒';
+            generateRandomArray();
+        }
+
+        window.addEventListener('load', generateRandomArray);
+    </script>
+</body>
+</html>
